@@ -1,42 +1,89 @@
-/* ===========================
-   GOOGLE STYLE RESET
-=========================== */
+/* ======================================
+   TABUNGAN LIBURAN
+====================================== */
+
+:root{
+
+    --primary:#46C49C;
+
+    --primary-dark:#2AA67F;
+
+    --secondary:#F4FBF8;
+
+    --background:#F5F7FB;
+
+    --surface:#FFFFFF;
+
+    --text:#2D3748;
+
+    --text-light:#718096;
+
+    --danger:#FF6B6B;
+
+    --success:#22C55E;
+
+    --warning:#F59E0B;
+
+    --shadow:
+    0 10px 30px rgba(0,0,0,.08);
+
+    --radius:22px;
+
+}
+
+/* ======================================
+   RESET
+====================================== */
 
 *{
+
     margin:0;
+
     padding:0;
+
     box-sizing:border-box;
+
 }
 
 body{
 
     font-family:'Poppins',sans-serif;
 
-    background:#F4F8FB;
+    background:var(--background);
 
-    color:#333;
-
-    line-height:1.5;
+    color:var(--text);
 
 }
 
-/* ===========================
+/* ======================================
    HERO
-=========================== */
+====================================== */
 
 .hero{
 
     background:
-    linear-gradient(
-    135deg,
-    #8EE3CF,
-    #B7F3E4);
 
-    padding:40px 20px;
+    linear-gradient(
+
+    135deg,
+
+    #CFF8E9,
+
+    #EAFBF4
+
+    );
+
+    padding:45px 20px;
 
     text-align:center;
 
-    color:#1F3A3D;
+}
+
+.hero-content{
+
+    max-width:500px;
+
+    margin:auto;
 
 }
 
@@ -50,38 +97,29 @@ body{
 
 .hero p{
 
-    opacity:.9;
-
-    margin-bottom:25px;
+    color:var(--text-light);
 
 }
 
-/* ===========================
-   TARGET
-=========================== */
+.target-card{
 
-.target-box{
+    margin-top:25px;
 
     background:#FFF;
 
-    border-radius:20px;
+    border-radius:24px;
 
-    padding:20px;
+    padding:22px;
 
-    max-width:420px;
-
-    margin:auto;
-
-    box-shadow:
-    0 8px 25px rgba(0,0,0,.08);
+    box-shadow:var(--shadow);
 
 }
 
-.target-label{
+.target-title{
 
     font-size:.9rem;
 
-    color:#777;
+    color:var(--text-light);
 
     margin-bottom:8px;
 
@@ -89,9 +127,9 @@ body{
 
 #targetValue{
 
-    font-size:1.6rem;
+    font-size:1.7rem;
 
-    color:#16A085;
+    color:var(--primary-dark);
 
     margin-bottom:15px;
 
@@ -117,15 +155,21 @@ body{
 
     height:100%;
 
-    background:
-    linear-gradient(
-    90deg,
-    #00C896,
-    #4FD1C5);
-
     border-radius:50px;
 
-    transition:.5s;
+    background:
+
+    linear-gradient(
+
+    90deg,
+
+    #46C49C,
+
+    #76E0C0
+
+    );
+
+    transition:.4s;
 
 }
 
@@ -135,27 +179,47 @@ body{
 
     font-weight:600;
 
-    color:#16A085;
+    color:var(--primary-dark);
 
 }
 
-/* ===========================
+.hero-insight{
+
+    margin-top:18px;
+
+    background:#EDFDF6;
+
+    border-radius:15px;
+
+    padding:12px;
+
+    font-size:.9rem;
+
+}
+
+/* ======================================
    CONTAINER
-=========================== */
+====================================== */
 
 .container{
 
-    width:min(1100px,92%);
+    width:min(
+
+    520px,
+
+    92%
+
+    );
 
     margin:auto;
 
-    padding:25px 0;
+    padding:20px 0 40px;
 
 }
 
 section{
 
-    margin-bottom:30px;
+    margin-bottom:25px;
 
 }
 
@@ -163,55 +227,121 @@ section h2{
 
     margin-bottom:15px;
 
-    color:#2C3E50;
+    font-size:1.1rem;
 
 }
 
-/* ===========================
+/* ======================================
+   CARD
+====================================== */
+
+.card{
+
+    background:var(--surface);
+
+    border-radius:20px;
+
+    padding:18px;
+
+    box-shadow:var(--shadow);
+
+}
+
+/* ======================================
    SUMMARY
-=========================== */
+====================================== */
 
 .summary-grid{
 
     display:grid;
 
     grid-template-columns:
-    repeat(
-    auto-fit,
-    minmax(220px,1fr));
 
-    gap:15px;
+    repeat(3,1fr);
 
-}
-
-.card{
-
-    background:#FFF;
-
-    padding:18px;
-
-    border-radius:18px;
-
-    box-shadow:
-    0 5px 15px rgba(0,0,0,.06);
+    gap:12px;
 
 }
 
-/* ===========================
+.summary-grid .card{
+
+    text-align:center;
+
+}
+
+.summary-grid h3{
+
+    font-size:.85rem;
+
+    margin-bottom:10px;
+
+}
+
+.summary-grid h2{
+
+    font-size:1.2rem;
+
+    margin:0;
+
+    color:var(--primary-dark);
+
+}
+
+/* ======================================
    MEMBER
-=========================== */
+====================================== */
 
-#memberList{
+.member-list{
 
     display:grid;
 
-    gap:15px;
+    gap:14px;
 
 }
 
-/* ===========================
+.member-card{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    background:#FFF;
+
+    border-radius:20px;
+
+    padding:18px;
+
+    box-shadow:var(--shadow);
+
+}
+
+.member-name{
+
+    font-weight:600;
+
+}
+
+.member-status{
+
+    margin-top:8px;
+
+    font-size:.8rem;
+
+}
+
+.member-balance{
+
+    font-weight:700;
+
+    color:var(--primary-dark);
+
+}
+
+/* ======================================
    REMINDER
-=========================== */
+====================================== */
 
 #reminderList{
 
@@ -221,116 +351,132 @@ section h2{
 
 }
 
-/* ===========================
+/* ======================================
    LOAN
-=========================== */
+====================================== */
 
 #loanList{
 
     display:grid;
 
-    gap:15px;
+    gap:12px;
 
 }
 
-/* ===========================
-   TABLE
-=========================== */
+/* ======================================
+   ACTIVITY
+====================================== */
 
-.table-wrapper{
+.section-header{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    margin-bottom:15px;
+
+}
+
+.section-header button{
+
+    border:none;
+
+    background:none;
+
+    color:var(--primary-dark);
+
+    font-weight:600;
+
+    cursor:pointer;
+
+}
+
+.transaction-list{
+
+    display:grid;
+
+    gap:12px;
+
+}
+
+.transaction-card{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
 
     background:#FFF;
 
-    border-radius:20px;
+    border-radius:18px;
 
-    overflow:hidden;
+    padding:15px 18px;
 
-    overflow-x:auto;
-
-    box-shadow:
-    0 5px 15px rgba(0,0,0,.06);
+    box-shadow:var(--shadow);
 
 }
 
-table{
+.transaction-title{
 
-    width:100%;
-
-    border-collapse:collapse;
+    font-weight:600;
 
 }
 
-th{
+.transaction-date{
 
-    background:#EAF8F4;
+    font-size:.8rem;
 
-    color:#2C3E50;
-
-    padding:15px;
-
-    text-align:left;
+    color:var(--text-light);
 
 }
 
-td{
+.transaction-amount{
 
-    padding:15px;
-
-    border-bottom:
-    1px solid #EEE;
+    font-weight:700;
 
 }
 
-tr:hover{
-
-    background:#F8FCFD;
-
-}
-
-/* ===========================
+/* ======================================
    FOOTER
-=========================== */
+====================================== */
 
 footer{
 
     text-align:center;
 
-    padding:25px;
-
-    color:#888;
+    color:var(--text-light);
 
     font-size:.9rem;
 
+    padding:25px;
+
 }
 
-/* ===========================
+/* ======================================
    MOBILE
-=========================== */
+====================================== */
 
-@media(max-width:768px){
+@media(max-width:480px){
 
-.hero{
+.summary-grid{
 
-    padding:30px 15px;
+    grid-template-columns:1fr;
 
 }
 
 .hero h1{
 
-    font-size:1.6rem;
+    font-size:1.7rem;
 
 }
 
 #targetValue{
 
-    font-size:1.3rem;
+    font-size:1.4rem;
 
 }
 
-.card{
-
-    padding:15px;
-
-}
-
-}
+   }
