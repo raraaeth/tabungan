@@ -1,0 +1,336 @@
+/* ===========================
+   GOOGLE STYLE RESET
+=========================== */
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+
+    font-family:'Poppins',sans-serif;
+
+    background:#F4F8FB;
+
+    color:#333;
+
+    line-height:1.5;
+
+}
+
+/* ===========================
+   HERO
+=========================== */
+
+.hero{
+
+    background:
+    linear-gradient(
+    135deg,
+    #8EE3CF,
+    #B7F3E4);
+
+    padding:40px 20px;
+
+    text-align:center;
+
+    color:#1F3A3D;
+
+}
+
+.hero h1{
+
+    font-size:2rem;
+
+    margin-bottom:10px;
+
+}
+
+.hero p{
+
+    opacity:.9;
+
+    margin-bottom:25px;
+
+}
+
+/* ===========================
+   TARGET
+=========================== */
+
+.target-box{
+
+    background:#FFF;
+
+    border-radius:20px;
+
+    padding:20px;
+
+    max-width:420px;
+
+    margin:auto;
+
+    box-shadow:
+    0 8px 25px rgba(0,0,0,.08);
+
+}
+
+.target-label{
+
+    font-size:.9rem;
+
+    color:#777;
+
+    margin-bottom:8px;
+
+}
+
+#targetValue{
+
+    font-size:1.6rem;
+
+    color:#16A085;
+
+    margin-bottom:15px;
+
+}
+
+.progress{
+
+    width:100%;
+
+    height:12px;
+
+    background:#E8EEF2;
+
+    border-radius:50px;
+
+    overflow:hidden;
+
+}
+
+.progress-bar{
+
+    width:0%;
+
+    height:100%;
+
+    background:
+    linear-gradient(
+    90deg,
+    #00C896,
+    #4FD1C5);
+
+    border-radius:50px;
+
+    transition:.5s;
+
+}
+
+.progress-text{
+
+    margin-top:10px;
+
+    font-weight:600;
+
+    color:#16A085;
+
+}
+
+/* ===========================
+   CONTAINER
+=========================== */
+
+.container{
+
+    width:min(1100px,92%);
+
+    margin:auto;
+
+    padding:25px 0;
+
+}
+
+section{
+
+    margin-bottom:30px;
+
+}
+
+section h2{
+
+    margin-bottom:15px;
+
+    color:#2C3E50;
+
+}
+
+/* ===========================
+   SUMMARY
+=========================== */
+
+.summary-grid{
+
+    display:grid;
+
+    grid-template-columns:
+    repeat(
+    auto-fit,
+    minmax(220px,1fr));
+
+    gap:15px;
+
+}
+
+.card{
+
+    background:#FFF;
+
+    padding:18px;
+
+    border-radius:18px;
+
+    box-shadow:
+    0 5px 15px rgba(0,0,0,.06);
+
+}
+
+/* ===========================
+   MEMBER
+=========================== */
+
+#memberList{
+
+    display:grid;
+
+    gap:15px;
+
+}
+
+/* ===========================
+   REMINDER
+=========================== */
+
+#reminderList{
+
+    display:grid;
+
+    gap:12px;
+
+}
+
+/* ===========================
+   LOAN
+=========================== */
+
+#loanList{
+
+    display:grid;
+
+    gap:15px;
+
+}
+
+/* ===========================
+   TABLE
+=========================== */
+
+.table-wrapper{
+
+    background:#FFF;
+
+    border-radius:20px;
+
+    overflow:hidden;
+
+    overflow-x:auto;
+
+    box-shadow:
+    0 5px 15px rgba(0,0,0,.06);
+
+}
+
+table{
+
+    width:100%;
+
+    border-collapse:collapse;
+
+}
+
+th{
+
+    background:#EAF8F4;
+
+    color:#2C3E50;
+
+    padding:15px;
+
+    text-align:left;
+
+}
+
+td{
+
+    padding:15px;
+
+    border-bottom:
+    1px solid #EEE;
+
+}
+
+tr:hover{
+
+    background:#F8FCFD;
+
+}
+
+/* ===========================
+   FOOTER
+=========================== */
+
+footer{
+
+    text-align:center;
+
+    padding:25px;
+
+    color:#888;
+
+    font-size:.9rem;
+
+}
+
+/* ===========================
+   MOBILE
+=========================== */
+
+@media(max-width:768px){
+
+.hero{
+
+    padding:30px 15px;
+
+}
+
+.hero h1{
+
+    font-size:1.6rem;
+
+}
+
+#targetValue{
+
+    font-size:1.3rem;
+
+}
+
+.card{
+
+    padding:15px;
+
+}
+
+}
