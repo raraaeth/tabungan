@@ -1,38 +1,84 @@
-/* ==========================================
+/* =====================================================
    TABUNGAN LIBURAN
    SCRIPT.JS
-========================================== */
+===================================================== */
+
+
+/* =====================================================
+   CONFIG
+===================================================== */
 
 const API_URL =
 "https://opensheet.elk.sh/1vgp4MkVYRFOqxoojo4mnuYkgX1cxfsUaNleyze9-qYs/transaksi";
 
-/* ==========================================
-   TARGET LIBURAN
-========================================== */
+const TARGET_LIBURAN = 3000000;
 
-const TARGET_LIBURAN = 5000000;
+const SHOW_TRANSACTION = 5;
 
-/* ==========================================
-   GLOBAL DATA
-========================================== */
+
+/* =====================================================
+   ELEMENT
+===================================================== */
+
+const targetValue =
+document.getElementById("targetValue");
+
+const progressBar =
+document.getElementById("progressBar");
+
+const progressText =
+document.getElementById("progressText");
+
+const heroInsight =
+document.getElementById("heroInsight");
+
+const saldoCard =
+document.getElementById("saldoCard");
+
+const masukCard =
+document.getElementById("masukCard");
+
+const bungaCard =
+document.getElementById("bungaCard");
+
+const memberList =
+document.getElementById("memberList");
+
+const reminderList =
+document.getElementById("reminderList");
+
+const loanList =
+document.getElementById("loanList");
+
+const transactionList =
+document.getElementById("transactionList");
+
+const toggleTransaction =
+document.getElementById("toggleTransaction");
+
+
+/* =====================================================
+   GLOBAL
+===================================================== */
 
 let transactions = [];
 
-let summary = {};
-
 let members = {};
 
-let loans = [];
+let summary = {};
 
-/* ==========================================
-   FORMAT RUPIAH
-========================================== */
+let showAllTransaction = false;
 
-function rupiah(value){
+
+/* =====================================================
+   HELPER
+===================================================== */
+
+function rupiah(number){
 
     return "Rp " +
 
-    Number(value)
+    Number(number)
 
     .toLocaleString(
         "id-ID"
@@ -40,19 +86,17 @@ function rupiah(value){
 
 }
 
-/* ==========================================
-   FORMAT TANGGAL
-========================================== */
-
 function formatDate(date){
 
     return new Date(date)
 
     .toLocaleDateString(
+
         "id-ID",
+
         {
 
-            day:"2-digit",
+            day:"numeric",
 
             month:"short",
 
@@ -64,21 +108,112 @@ function formatDate(date){
 
 }
 
-/* ==========================================
-   BULAN SEKARANG
-========================================== */
+function currentMonth(){
 
-const today = new Date();
+    return new Date()
 
-const currentMonth =
-today.getMonth();
+    .getMonth();
 
-const currentYear =
-today.getFullYear();
+}
 
-/* ==========================================
+function currentYear(){
+
+    return new Date()
+
+    .getFullYear();
+
+}
+
+function month(date){
+
+    return new Date(date)
+
+    .getMonth();
+
+}
+
+function year(date){
+
+    return new Date(date)
+
+    .getFullYear();
+
+}
+
+
+/* =====================================================
+   MEMBER
+===================================================== */
+
+function createMember(name){
+
+    return{
+
+        nama:name,
+
+        masuk:0,
+
+        pinjam:0,
+
+        bayar:0,
+
+        bulanIni:false
+
+    };
+
+}
+
+
+/* =====================================================
+   MEMBER SALDO
+===================================================== */
+
+function memberSaldo(member){
+
+    return(
+
+        member.masuk +
+
+        member.bayar -
+
+        member.pinjam
+
+    );
+
+}
+
+
+/* =====================================================
+   SORT MEMBER
+===================================================== */
+
+function memberData(){
+
+    return Object
+
+    .values(members)
+
+    .sort(
+
+        (a,b)=>
+
+        a.nama
+
+        .localeCompare(
+
+            b.nama,
+
+            "id"
+
+        )
+
+    );
+
+}
+
+/* =====================================================
    FETCH DATA
-========================================== */
+===================================================== */
 
 async function fetchData(){
 
@@ -102,110 +237,115 @@ async function fetchData(){
 
 }
 
-/* ==========================================
-   START
-========================================== */
 
-fetchData();
-
-/* ==========================================
+/* =====================================================
    PROCESS DATA
-========================================== */
+===================================================== */
 
 function processData(){
 
-    let saldo = 0;
+    members={};
 
-    let masukBulan = 0;
+    summary={
 
-    let bungaBulan = 0;
+        saldo:0,
 
-    members = {};
+        masuk:0,
 
-    loans = [];
+        pinjam:0,
+
+        bayar:0,
+
+        keluar:0,
+
+        bunga:0,
+
+        masukBulan:0,
+
+        bungaBulan:0,
+
+        progress:0
+
+    };
+
+    const bulan=
+    currentMonth();
+
+    const tahun=
+    currentYear();
 
     transactions.forEach(item=>{
 
-        const jenis =
-        item.Jenis
+        const nama=
+
+        (item.Nama || "")
+        .trim();
+
+        const jenis=
+
+        (item.Jenis || "")
         .toLowerCase()
         .trim();
 
-        const nama =
-        item.Nama
-        .trim();
+        const nominal=
 
-        const nominal =
         Number(item.Bayar)||0;
 
-        const tanggal =
-        new Date(item.Tanggal);
+        const isCurrent=
 
-        const bulan =
-        tanggal.getMonth();
+        month(item.Tanggal)===bulan &&
 
-        const tahun =
-        tanggal.getFullYear();
+        year(item.Tanggal)===tahun;
 
-        /* ======================
+        /* =====================
            MEMBER
-        ====================== */
+        ===================== */
 
-        if(!members[nama]){
+        if(
 
-            members[nama]={
+            nama &&
 
-                nama,
+            !members[nama]
 
-                tabungan:0,
+        ){
 
-                bulanIni:false
+            members[nama]=
 
-            };
+            createMember(nama);
 
         }
 
-        /* ======================
-           SALDO
-        ====================== */
+        /* =====================
+           TRANSAKSI
+        ===================== */
 
         switch(jenis){
 
             case "masuk":
 
-                saldo+=nominal;
+                summary.masuk+=nominal;
 
-                members[nama].tabungan+=nominal;
+                summary.saldo+=nominal;
 
-                if(
-                    bulan===currentMonth &&
-                    tahun===currentYear
-                ){
+                if(nama){
 
-                    masukBulan+=nominal;
+                    members[nama]
 
-                    members[nama].bulanIni=true;
+                    .masuk+=nominal;
 
                 }
 
-                break;
+                if(isCurrent){
 
-            case "bayar":
+                    summary.masukBulan+=nominal;
 
-                saldo+=nominal;
+                    if(nama){
 
-                break;
+                        members[nama]
 
-            case "bunga":
+                        .bulanIni=true;
 
-                saldo+=nominal;
-
-                if(
-                    bulan===currentMonth &&
-                    tahun===currentYear
-                ){
-
-                    bungaBulan+=nominal;
+                    }
 
                 }
 
@@ -213,25 +353,63 @@ function processData(){
 
             case "pinjam":
 
-                saldo-=nominal;
+                summary.pinjam+=nominal;
 
-                loans.push({
+                summary.saldo-=nominal;
 
-                    nama,
+                if(nama){
 
-                    tanggal:item.Tanggal,
+                    members[nama]
 
-                    nominal,
+                    .pinjam+=nominal;
 
-                    status:"Dipinjam"
+                }
 
-                });
+                break;
+
+            case "bayar":
+
+                summary.bayar+=nominal;
+
+                summary.saldo+=nominal;
+
+                if(nama){
+
+                    members[nama]
+
+                    .bayar+=nominal;
+
+                }
+
+                if(isCurrent){
+
+                    summary.masukBulan+=nominal;
+
+                }
+
+                break;
+
+            case "bunga":
+
+                summary.bunga+=nominal;
+
+                summary.saldo+=nominal;
+
+                if(isCurrent){
+
+                    summary.bungaBulan+=nominal;
+
+                    summary.masukBulan+=nominal;
+
+                }
 
                 break;
 
             case "keluar":
 
-                saldo-=nominal;
+                summary.keluar+=nominal;
+
+                summary.saldo-=nominal;
 
                 break;
 
@@ -239,67 +417,21 @@ function processData(){
 
     });
 
-    /* ======================
-       HITUNG STATUS PINJAMAN
-    ====================== */
+    summary.progress=
 
-    transactions.forEach(item=>{
+    Math.min(
 
-        if(
-            item.Jenis
-            .toLowerCase()
-            ==="bayar"
-        ){
+        (
 
-            const loan =
-            loans.find(
+            summary.saldo /
 
-                x=>
-                x.nama===item.Nama &&
-                x.status==="Dipinjam"
+            TARGET_LIBURAN
 
-            );
+        )*100,
 
-            if(loan){
+        100
 
-                loan.status="Lunas";
-
-                loan.bayar=
-                Number(item.Bayar);
-
-            }
-
-        }
-
-    });
-
-    /* ======================
-       SUMMARY
-    ====================== */
-
-    summary={
-
-        saldo,
-
-        masukBulan,
-
-        bungaBulan,
-
-        target:TARGET_LIBURAN,
-
-        progress:
-
-        Math.min(
-
-            saldo/
-            TARGET_LIBURAN*
-            100,
-
-            100
-
-        )
-
-    };
+    );
 
     renderHero();
 
@@ -313,143 +445,192 @@ function processData(){
 
     renderTransactions();
 
-          }
+        }
 
-/* ==========================================
+/* =====================================================
    HERO
-========================================== */
+===================================================== */
 
 function renderHero(){
 
-    document.getElementById("targetValue").innerHTML=
+    targetValue.textContent =
 
-    `${rupiah(summary.saldo)}
-    / ${rupiah(summary.target)}`;
+        `${rupiah(summary.saldo)} / ${rupiah(TARGET_LIBURAN)}`;
 
-    document.getElementById("progressBar").style.width=
+    progressBar.style.width =
 
-    `${summary.progress}%`;
+        `${summary.progress}%`;
 
-    document.getElementById("progressText").innerHTML=
+    progressText.textContent =
 
-    `${summary.progress.toFixed(1)}% Tercapai`;
+        `${summary.progress.toFixed(1)}% Tercapai`;
+
+    const belum =
+
+        memberData()
+
+        .filter(
+
+            member => !member.bulanIni
+
+        ).length;
+
+    if(belum===0){
+
+        heroInsight.innerHTML =
+
+        "🎉 Semua anggota sudah menabung bulan ini.";
+
+    }
+
+    else{
+
+        heroInsight.innerHTML =
+
+        `🔔 Masih ada ${belum} anggota yang belum menabung bulan ini.`;
+
+    }
 
 }
 
-/* ==========================================
+
+/* =====================================================
    SUMMARY
-========================================== */
+===================================================== */
 
 function renderSummary(){
 
-    document.getElementById("saldoCard").innerHTML=
+    saldoCard.innerHTML =
 
     `
-    <h3>💰 Saldo Saat Ini</h3>
 
-    <h2>${rupiah(summary.saldo)}</h2>
+    <div class="summary-icon">
+
+        💰
+
+    </div>
+
+    <div class="summary-title">
+
+        Saldo Saat Ini
+
+    </div>
+
+    <div class="summary-value">
+
+        ${rupiah(summary.saldo)}
+
+    </div>
+
     `;
 
-    document.getElementById("bulanCard").innerHTML=
+
+    masukCard.innerHTML =
 
     `
-    <h3>📈 Dana Masuk Bulan Ini</h3>
 
-    <h2>${rupiah(summary.masukBulan)}</h2>
+    <div class="summary-icon">
+
+        📈
+
+    </div>
+
+    <div class="summary-title">
+
+        Dana Masuk Bulan Ini
+
+    </div>
+
+    <div class="summary-value">
+
+        ${rupiah(summary.masukBulan)}
+
+    </div>
+
     `;
 
-    document.getElementById("bungaCard").innerHTML=
+
+    bungaCard.innerHTML =
 
     `
-    <h3>🏦 Bunga Bulan Ini</h3>
 
-    <h2>${rupiah(summary.bungaBulan)}</h2>
+    <div class="summary-icon">
+
+        🏦
+
+    </div>
+
+    <div class="summary-title">
+
+        Bunga Bulan Ini
+
+    </div>
+
+    <div class="summary-value">
+
+        ${rupiah(summary.bungaBulan)}
+
+    </div>
+
     `;
 
 }
 
-/* ==========================================
-   MEMBER
-========================================== */
+/* =====================================================
+   TABUNGAN ANGGOTA
+===================================================== */
 
 function renderMembers(){
 
-    const container=
+    memberList.innerHTML="";
 
-    document.getElementById("memberList");
+    memberData()
 
-    container.innerHTML="";
+    .forEach(member=>{
 
-    const data=
+        const saldo =
 
-    Object.values(members)
+        memberSaldo(member);
 
-    .sort(
+        const status =
 
-        (a,b)=>
+        member.bulanIni
 
-        b.tabungan-
-        a.tabungan
+        ?
 
-    );
-
-    data.forEach((item,index)=>{
-
-        const persen=
-
-        summary.saldo===0
-
-        ?0
+        "✅ Sudah Menabung"
 
         :
 
-        (item.tabungan/
+        "⏳ Belum Menabung";
 
-        summary.saldo)*100;
-
-        container.innerHTML+=
+        memberList.innerHTML +=
 
         `
-        <div class="card">
 
-            <div style="
-            display:flex;
-            justify-content:space-between;
-            align-items:center;">
+        <div class="member-card">
 
-                <h3>
+            <div>
 
-                ${index+1}.
-                ${item.nama}
+                <div class="member-name">
 
-                </h3>
+                    👤 ${member.nama}
 
-                <strong>
+                </div>
 
-                ${rupiah(item.tabungan)}
+                <div class="member-status">
 
-                </strong>
-
-            </div>
-
-            <div class="progress"
-            style="margin-top:15px;">
-
-                <div
-                class="progress-bar"
-
-                style="width:${persen}%">
+                    ${status}
 
                 </div>
 
             </div>
 
-            <small>
+            <div class="member-balance">
 
-            ${persen.toFixed(1)}%
-            dari total tabungan
+                ${rupiah(saldo)}
 
-            </small>
+            </div>
 
         </div>
 
@@ -457,141 +638,207 @@ function renderMembers(){
 
     });
 
-      }
+}
 
-/* ==========================================
+
+/* =====================================================
    REMINDER
-========================================== */
+===================================================== */
 
 function renderReminder(){
 
-    const container =
-    document.getElementById("reminderList");
-
-    container.innerHTML = "";
+    reminderList.innerHTML="";
 
     const belum =
-    Object.values(members)
+
+    memberData()
+
     .filter(
-        item => !item.bulanIni
+
+        member=>
+
+        !member.bulanIni
+
     );
 
-    if(belum.length===0){
+    if(
 
-        container.innerHTML=
+        belum.length===0
+
+    ){
+
+        reminderList.innerHTML=
 
         `
+
         <div class="card">
 
-            🎉 Semua anggota sudah
-            menabung bulan ini.
+            🎉 Semua anggota sudah menabung bulan ini.
 
         </div>
+
         `;
 
         return;
 
     }
 
-    belum.forEach(item=>{
+    belum.forEach(member=>{
 
-        container.innerHTML+=
+        reminderList.innerHTML+=
 
         `
+
         <div class="card">
 
-            ❌ ${item.nama}
+            ❌
+
+            ${member.nama}
 
         </div>
+
         `;
 
     });
 
 }
 
-/* ==========================================
-   PINJAMAN
-========================================== */
+
+/* =====================================================
+   RIWAYAT PINJAMAN
+===================================================== */
 
 function renderLoans(){
 
-    const container =
-    document.getElementById("loanList");
+    loanList.innerHTML="";
 
-    container.innerHTML="";
+    const pinjaman =
 
-    if(loans.length===0){
+    transactions
 
-        container.innerHTML=
+    .filter(item=>
+
+        item.Jenis
+
+        .toLowerCase()
+
+        ==="pinjam"
+
+    )
+
+    .sort(
+
+        (a,b)=>
+
+        new Date(b.Tanggal)-
+
+        new Date(a.Tanggal)
+
+    );
+
+    if(
+
+        pinjaman.length===0
+
+    ){
+
+        loanList.innerHTML=
 
         `
+
         <div class="card">
 
-            Tidak ada riwayat pinjaman.
+            Belum ada riwayat pinjaman.
 
         </div>
+
         `;
 
         return;
 
     }
 
-    loans.forEach(item=>{
+    pinjaman.forEach(item=>{
 
-        const warna =
-        item.status==="Lunas"
-        ? "#16A085"
-        : "#E67E22";
+        const nama=
 
-        container.innerHTML+=
+        item.Nama;
+
+        const pinjam=
+
+        Number(item.Bayar);
+
+        const bayar=
+
+        transactions
+
+        .filter(data=>
+
+            data.Nama===nama &&
+
+            data.Jenis
+
+            .toLowerCase()
+
+            ==="bayar"
+
+        )
+
+        .reduce(
+
+            (a,b)=>
+
+            a+
+
+            Number(b.Bayar),
+
+            0
+
+        );
+
+        const status=
+
+        bayar>=pinjam
+
+        ?
+
+        "✅ Lunas"
+
+        :
+
+        "⏳ Belum Lunas";
+
+        loanList.innerHTML+=
 
         `
+
         <div class="card">
 
-            <h3>
+            <strong>
 
-                ${item.nama}
+                👤 ${nama}
 
-            </h3>
+            </strong>
 
-            <p>
+            <br>
 
-                ${formatDate(item.tanggal)}
+            ${formatDate(item.Tanggal)}
 
-            </p>
+            <br><br>
 
-            <p>
+            Pinjam :
 
-                Pinjam :
-                <b>${rupiah(item.nominal)}</b>
+            ${rupiah(pinjam)}
 
-            </p>
+            <br>
 
-            ${
-                item.bayar
+            Bayar :
 
-                ?
+            ${rupiah(bayar)}
 
-                `<p>
-                Bayar :
-                <b>${rupiah(item.bayar)}</b>
-                </p>`
+            <br><br>
 
-                :
-
-                ""
-
-            }
-
-            <p
-            style="
-            color:${warna};
-            font-weight:600;
-            ">
-
-                ${item.status}
-
-            </p>
+            ${status}
 
         </div>
 
@@ -601,18 +848,16 @@ function renderLoans(){
 
 }
 
-/* ==========================================
+
+/* =====================================================
    TRANSAKSI
-========================================== */
+===================================================== */
 
 function renderTransactions(){
 
-    const tbody =
-    document.getElementById("transactionTable");
+    transactionList.innerHTML="";
 
-    tbody.innerHTML="";
-
-    const data =
+    const data=
 
     [...transactions]
 
@@ -620,99 +865,154 @@ function renderTransactions(){
 
         (a,b)=>
 
-        new Date(b.Tanggal)
-        -
+        new Date(b.Tanggal)-
+
         new Date(a.Tanggal)
 
     );
 
-    data.forEach(item=>{
+    const tampil=
 
-        let badge="#3498DB";
+    showAllTransaction
+
+    ?
+
+    data
+
+    :
+
+    data.slice(
+
+        0,
+
+        SHOW_TRANSACTION
+
+    );
+
+    tampil.forEach(item=>{
+
+        let icon="💰";
 
         switch(
 
             item.Jenis
+
             .toLowerCase()
 
         ){
 
             case "masuk":
 
-                badge="#2ECC71";
+                icon="🟢";
 
                 break;
 
             case "pinjam":
 
-                badge="#F39C12";
+                icon="🟠";
 
                 break;
 
             case "bayar":
 
-                badge="#3498DB";
+                icon="🔵";
 
                 break;
 
             case "keluar":
 
-                badge="#E74C3C";
+                icon="🔴";
 
                 break;
 
             case "bunga":
 
-                badge="#9B59B6";
+                icon="🟣";
 
                 break;
 
         }
 
-        tbody.innerHTML+=
+        transactionList.innerHTML+=
 
         `
-        <tr>
 
-            <td>
+        <div class="transaction-card">
 
-                ${formatDate(item.Tanggal)}
+            <div>
 
-            </td>
+                <div class="transaction-title">
 
-            <td>
+                    ${icon}
 
-                <span
-                style="
-                background:${badge};
-                color:white;
-                padding:4px 10px;
-                border-radius:20px;
-                font-size:12px;
-                ">
+                    ${item.Nama}
 
-                ${item.Jenis}
+                </div>
 
-                </span>
+                <div class="transaction-date">
 
-            </td>
+                    ${formatDate(item.Tanggal)}
 
-            <td>
+                </div>
 
-                ${item.Nama}
+            </div>
 
-            </td>
-
-            <td>
+            <div class="transaction-amount">
 
                 ${rupiah(item.Bayar)}
 
-            </td>
+            </div>
 
-        </tr>
+        </div>
 
         `;
 
     });
 
+    toggleTransaction.textContent=
+
+    showAllTransaction
+
+    ?
+
+    "Tampilkan 5 Terbaru"
+
+    :
+
+    "Lihat Semua";
+
 }
+
+
+/* =====================================================
+   EVENT
+===================================================== */
+
+toggleTransaction
+
+.addEventListener(
+
+    "click",
+
+    ()=>{
+
+        showAllTransaction=
+
+        !showAllTransaction;
+
+        renderTransactions();
+
+    }
+
+);
+
+
+/* =====================================================
+   START
+===================================================== */
+
+fetchData();
+
+
+
+
