@@ -15,6 +15,8 @@ const TARGET_LIBURAN = 3000000;
 
 const SHOW_TRANSACTION = 5;
 
+const SHOW_LOAN = 2;
+
 
 /* =====================================================
    ELEMENT
@@ -50,6 +52,9 @@ document.getElementById("reminderList");
 const loanList =
 document.getElementById("loanList");
 
+const toggleLoan =
+document.getElementById("toggleLoan");
+
 const transactionList =
 document.getElementById("transactionList");
 
@@ -68,6 +73,8 @@ let members = {};
 let summary = {};
 
 let showAllTransaction = false;
+
+let showAllLoan = false;
 
 
 /* =====================================================
@@ -758,7 +765,17 @@ function renderLoans(){
 
     }
 
-    pinjaman.forEach(item=>{
+    const tampil =
+showAllLoan
+?
+pinjaman
+:
+pinjaman.slice(
+    0,
+    SHOW_LOAN
+);
+
+tampil.forEach(item=>{
 
         const nama=
 
