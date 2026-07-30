@@ -767,34 +767,37 @@ function renderLoans(){
         const pinjam=
 
         Number(item.Bayar);
+       
+        const tanggalPinjam = 
+          
+        new Date(item.Tanggal);
 
-        const bayar=
+        // Cari pinjaman berikutnya milik orang yang sama
+const nextLoan = transactions
+    .filter(data =>
+        data.Nama === nama &&
+        data.Jenis.toLowerCase() === "pinjam" &&
+        new Date(data.Tanggal) > tanggalPinjam
+    )
+    .sort((a, b) => new Date(a.Tanggal) - new Date(b.Tanggal))[0];
 
-        transactions
+// Hitung pembayaran hanya di antara pinjaman ini dan pinjaman berikutnya
+const bayar = transactions
+    .filter(data => {
+        if (data.Nama !== nama) return false;
+        if (data.Jenis.toLowerCase() !== "bayar") return false;
 
-        .filter(data=>
+        const tgl = new Date(data.Tanggal);
 
-            data.Nama===nama &&
+        if (tgl < tanggalPinjam) return false;
 
-            data.Jenis
+        if (nextLoan && tgl >= new Date(nextLoan.Tanggal)) return false;
 
-            .toLowerCase()
+        return true;
+    })
+    .reduce((total, data) => total + Number(data.Bayar), 0);
 
-            ==="bayar"
-
-        )
-
-        .reduce(
-
-            (a,b)=>
-
-            a+
-
-            Number(b.Bayar),
-
-            0
-
-        );
+   
 
         const status=
 
