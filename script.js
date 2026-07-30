@@ -866,6 +866,18 @@ const bayar = transactions
 
     });
 
+   toggleLoan.textContent =
+
+showAllLoan
+
+?
+
+"Tampilkan 2 Terbaru"
+
+:
+
+"Lihat Semua";
+
 }
 
 
@@ -1021,6 +1033,24 @@ toggleTransaction
         !showAllTransaction;
 
         renderTransactions();
+
+    }
+
+);
+
+toggleLoan
+
+.addEventListener(
+
+    "click",
+
+    ()=>{
+
+        showAllLoan=
+
+        !showAllLoan;
+
+        renderLoans();
 
     }
 
