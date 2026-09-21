@@ -93,6 +93,7 @@ function rupiah(number){
 
 }
 
+
 function formatDate(date){
 
     return new Date(date)
@@ -115,6 +116,7 @@ function formatDate(date){
 
 }
 
+
 function currentMonth(){
 
     return new Date()
@@ -122,6 +124,7 @@ function currentMonth(){
     .getMonth();
 
 }
+
 
 function currentYear(){
 
@@ -131,6 +134,7 @@ function currentYear(){
 
 }
 
+
 function month(date){
 
     return new Date(date)
@@ -138,6 +142,7 @@ function month(date){
     .getMonth();
 
 }
+
 
 function year(date){
 
@@ -218,6 +223,7 @@ function memberData(){
 
 }
 
+
 /* =====================================================
    FETCH DATA
 ===================================================== */
@@ -275,34 +281,47 @@ function processData(){
 
     };
 
-    const bulan=
+
+    const bulan =
     currentMonth();
 
-    const tahun=
+    const tahun =
     currentYear();
+
 
     transactions.forEach(item=>{
 
-        const nama=
+        const nama =
 
-        (item.Nama || "")
+        (item.nama || "")
         .trim();
 
-        const jenis=
 
-        (item.Jenis || "")
+        const jenis =
+
+        (item.jenis || "")
         .toLowerCase()
         .trim();
 
-        const nominal=
 
-        Number(item.Bayar)||0;
+        const kategori =
 
-        const isCurrent=
+        (item.kategori || "")
+        .toLowerCase()
+        .trim();
 
-        month(item.Tanggal)===bulan &&
 
-        year(item.Tanggal)===tahun;
+        const nominal =
+
+        Number(item.nominal) || 0;
+
+
+        const isCurrent =
+
+        month(item.tanggal) === bulan &&
+
+        year(item.tanggal) === tahun;
+
 
         /* =====================
            MEMBER
@@ -316,115 +335,172 @@ function processData(){
 
         ){
 
-            members[nama]=
+            members[nama] =
 
             createMember(nama);
 
         }
 
+
         /* =====================
-           TRANSAKSI
+           NABUNG
         ===================== */
 
-        switch(jenis){
+        if(
 
-            case "masuk":
+            jenis === "masuk" &&
 
-                summary.masuk+=nominal;
+            kategori === "nabung"
 
-                summary.saldo+=nominal;
+        ){
 
-                if(nama){
+            summary.masuk += nominal;
 
-                    members[nama]
+            summary.saldo += nominal;
 
-                    .masuk+=nominal;
 
-                }
+            if(nama){
 
-                if(isCurrent){
+                members[nama]
 
-                    summary.masukBulan+=nominal;
+                .masuk += nominal;
 
-                    if(nama){
+            }
 
-                        members[nama]
 
-                        .bulanIni=true;
+            if(isCurrent){
 
-                    }
+                summary.masukBulan += nominal;
 
-                }
-
-                break;
-
-            case "hutang":
-
-                summary.hutang+=nominal;
-
-                summary.saldo-=nominal;
 
                 if(nama){
 
                     members[nama]
 
-                    .hutang+=nominal;
+                    .bulanIni = true;
 
                 }
 
-                break;
+            }
 
-            case "bayar":
+        }
 
-                summary.bayar+=nominal;
 
-                summary.saldo+=nominal;
+        /* =====================
+           HUTANG
+        ===================== */
 
-                if(nama){
+        else if(
 
-                    members[nama]
+            jenis === "keluar" &&
 
-                    .bayar+=nominal;
+            kategori === "hutang"
 
-                }
+        ){
 
-                if(isCurrent){
+            summary.hutang += nominal;
 
-                    summary.masukBulan+=nominal;
+            summary.saldo -= nominal;
 
-                }
 
-                break;
+            if(nama){
 
-            case "bunga":
+                members[nama]
 
-                summary.bunga+=nominal;
+                .hutang += nominal;
 
-                summary.saldo+=nominal;
+            }
 
-                if(isCurrent){
+        }
 
-                    summary.bungaBulan+=nominal;
 
-                    summary.masukBulan+=nominal;
+        /* =====================
+           BAYAR HUTANG
+        ===================== */
 
-                }
+        else if(
 
-                break;
+            jenis === "masuk" &&
 
-            case "keluar":
+            kategori === "bayar"
 
-                summary.keluar+=nominal;
+        ){
 
-                summary.saldo-=nominal;
+            summary.bayar += nominal;
 
-                break;
+            summary.saldo += nominal;
+
+
+            if(nama){
+
+                members[nama]
+
+                .bayar += nominal;
+
+            }
+
+
+            if(isCurrent){
+
+                summary.masukBulan += nominal;
+
+            }
+
+        }
+
+
+        /* =====================
+           BUNGA
+        ===================== */
+
+        else if(
+
+            jenis === "masuk" &&
+
+            kategori === "bunga"
+
+        ){
+
+            summary.bunga += nominal;
+
+            summary.saldo += nominal;
+
+
+            if(isCurrent){
+
+                summary.bungaBulan += nominal;
+
+                summary.masukBulan += nominal;
+
+            }
+
+        }
+
+
+        /* =====================
+           KELUAR LAINNYA
+        ===================== */
+
+        else if(
+
+            jenis === "keluar"
+
+        ){
+
+            summary.keluar += nominal;
+
+            summary.saldo -= nominal;
 
         }
 
     });
 
-    summary.progress=
+
+    /* =====================
+       PROGRESS
+    ===================== */
+
+    summary.progress =
 
     Math.min(
 
@@ -434,11 +510,12 @@ function processData(){
 
             TARGET_LIBURAN
 
-        )*100,
+        ) * 100,
 
         100
 
     );
+
 
     renderHero();
 
@@ -452,7 +529,8 @@ function processData(){
 
     renderTransactions();
 
-        }
+}
+
 
 /* =====================================================
    HERO
@@ -464,13 +542,16 @@ function renderHero(){
 
         `${rupiah(summary.saldo)} / ${rupiah(TARGET_LIBURAN)}`;
 
+
     progressBar.style.width =
 
         `${summary.progress}%`;
 
+
     progressText.textContent =
 
         `${summary.progress.toFixed(1)}% Tercapai`;
+
 
     const belum =
 
@@ -482,7 +563,8 @@ function renderHero(){
 
         ).length;
 
-    if(belum===0){
+
+    if(belum === 0){
 
         heroInsight.innerHTML =
 
@@ -583,6 +665,7 @@ function renderSummary(){
 
 }
 
+
 /* =====================================================
    TABUNGAN ANGGOTA
 ===================================================== */
@@ -591,6 +674,7 @@ function renderMembers(){
 
     memberList.innerHTML="";
 
+
     memberData()
 
     .forEach(member=>{
@@ -598,6 +682,7 @@ function renderMembers(){
         const saldo =
 
         memberSaldo(member);
+
 
         const status =
 
@@ -610,6 +695,7 @@ function renderMembers(){
         :
 
         "⏳ Belum Menabung";
+
 
         memberList.innerHTML +=
 
@@ -656,21 +742,23 @@ function renderReminder(){
 
     reminderList.innerHTML="";
 
+
     const belum =
 
     memberData()
 
     .filter(
 
-        member=>
+        member =>
 
         !member.bulanIni
 
     );
 
+
     if(
 
-        belum.length===0
+        belum.length === 0
 
     ){
 
@@ -690,9 +778,10 @@ function renderReminder(){
 
     }
 
+
     belum.forEach(member=>{
 
-        reminderList.innerHTML+=
+        reminderList.innerHTML +=
 
         `
 
@@ -712,40 +801,51 @@ function renderReminder(){
 
 
 /* =====================================================
-   RIWAYAT PINJAMAN
+   RIWAYAT HUTANG
 ===================================================== */
 
 function renderLoans(){
 
     loanList.innerHTML="";
 
-    const pinjaman =
+
+    const hutang =
 
     transactions
 
-    .filter(item=>
+    .filter(item =>
 
-        item.Jenis
-
+        (item.jenis || "")
         .toLowerCase()
+        .trim()
 
-        ==="hutang"
+        === "keluar"
+
+        &&
+
+        (item.kategori || "")
+        .toLowerCase()
+        .trim()
+
+        === "hutang"
 
     )
+
 
     .sort(
 
         (a,b)=>
 
-        new Date(b.Tanggal)-
+        new Date(b.tanggal) -
 
-        new Date(a.Tanggal)
+        new Date(a.tanggal)
 
     );
 
+
     if(
 
-        pinjaman.length===0
+        hutang.length === 0
 
     ){
 
@@ -755,7 +855,7 @@ function renderLoans(){
 
         <div class="card">
 
-            Belum ada riwayat pinjaman.
+            Belum ada riwayat hutang.
 
         </div>
 
@@ -765,60 +865,177 @@ function renderLoans(){
 
     }
 
+
     const tampil =
-showAllLoan
-?
-pinjaman
-:
-pinjaman.slice(
-    0,
-    SHOW_LOAN
-);
 
-tampil.forEach(item=>{
+        showAllLoan
 
-        const nama=
+        ?
 
-        item.Nama;
+        hutang
 
-        const pinjam=
+        :
 
-        Number(item.Bayar);
-       
-        const tanggalPinjam = 
-          
-        new Date(item.Tanggal);
+        hutang.slice(
 
-        // Cari pinjaman berikutnya milik orang yang sama
-const nextLoan = transactions
-    .filter(data =>
-        data.Nama === nama &&
-        data.Jenis.toLowerCase() === "pinjam" &&
-        new Date(data.Tanggal) > tanggalPinjam
-    )
-    .sort((a, b) => new Date(a.Tanggal) - new Date(b.Tanggal))[0];
+            0,
 
-// Hitung pembayaran hanya di antara pinjaman ini dan pinjaman berikutnya
-const bayar = transactions
-    .filter(data => {
-        if (data.Nama !== nama) return false;
-        if (data.Jenis.toLowerCase() !== "bayar") return false;
+            SHOW_LOAN
 
-        const tgl = new Date(data.Tanggal);
+        );
 
-        if (tgl < tanggalPinjam) return false;
 
-        if (nextLoan && tgl >= new Date(nextLoan.Tanggal)) return false;
+    tampil.forEach(item=>{
 
-        return true;
-    })
-    .reduce((total, data) => total + Number(data.Bayar), 0);
+        const nama =
 
-   
+        item.nama;
 
-        const status=
 
-        bayar>=pinjam
+        const hutangNominal =
+
+        Number(item.nominal) || 0;
+
+
+        const tanggalHutang =
+
+        new Date(item.tanggal);
+
+
+        /* ==========================
+           CARI HUTANG BERIKUTNYA
+        ========================== */
+
+        const nextLoan =
+
+        transactions
+
+        .filter(data =>
+
+            data.nama === nama &&
+
+            (data.jenis || "")
+            .toLowerCase()
+            .trim()
+
+            === "keluar" &&
+
+            (data.kategori || "")
+            .toLowerCase()
+            .trim()
+
+            === "hutang" &&
+
+            new Date(data.tanggal) >
+
+            tanggalHutang
+
+        )
+
+        .sort(
+
+            (a,b)=>
+
+            new Date(a.tanggal) -
+
+            new Date(b.tanggal)
+
+        )[0];
+
+
+        /* ==========================
+           HITUNG PEMBAYARAN
+        ========================== */
+
+        const bayar =
+
+        transactions
+
+        .filter(data=>{
+
+            if(data.nama !== nama)
+
+                return false;
+
+
+            if(
+
+                (data.jenis || "")
+                .toLowerCase()
+                .trim()
+
+                !== "masuk"
+
+            )
+
+                return false;
+
+
+            if(
+
+                (data.kategori || "")
+                .toLowerCase()
+                .trim()
+
+                !== "bayar"
+
+            )
+
+                return false;
+
+
+            const tgl =
+
+            new Date(data.tanggal);
+
+
+            if(
+
+                tgl < tanggalHutang
+
+            )
+
+                return false;
+
+
+            if(
+
+                nextLoan &&
+
+                tgl >=
+
+                new Date(
+
+                    nextLoan.tanggal
+
+                )
+
+            )
+
+                return false;
+
+
+            return true;
+
+        })
+
+
+        .reduce(
+
+            (total,data)=>
+
+            total +
+
+            (Number(data.nominal) || 0),
+
+            0
+
+        );
+
+
+        const status =
+
+        bayar >= hutangNominal
 
         ?
 
@@ -828,7 +1045,8 @@ const bayar = transactions
 
         "⏳ Belum Lunas";
 
-        loanList.innerHTML+=
+
+        loanList.innerHTML +=
 
         `
 
@@ -842,13 +1060,13 @@ const bayar = transactions
 
             <br>
 
-            ${formatDate(item.Tanggal)}
+            ${formatDate(item.tanggal)}
 
             <br><br>
 
-            Pinjam :
+            Hutang :
 
-            ${rupiah(pinjam)}
+            ${rupiah(hutangNominal)}
 
             <br>
 
@@ -866,17 +1084,18 @@ const bayar = transactions
 
     });
 
-   toggleLoan.textContent =
 
-showAllLoan
+    toggleLoan.textContent =
 
-?
+    showAllLoan
 
-"Tampilkan 2 Terbaru"
+    ?
 
-:
+    "Tampilkan 2 Terbaru"
 
-"Lihat Semua";
+    :
+
+    "Lihat Semua";
 
 }
 
@@ -889,7 +1108,8 @@ function renderTransactions(){
 
     transactionList.innerHTML="";
 
-    const data=
+
+    const data =
 
     [...transactions]
 
@@ -897,13 +1117,14 @@ function renderTransactions(){
 
         (a,b)=>
 
-        new Date(b.Tanggal)-
+        new Date(b.tanggal) -
 
-        new Date(a.Tanggal)
+        new Date(a.tanggal)
 
     );
 
-    const tampil=
+
+    const tampil =
 
     showAllTransaction
 
@@ -921,51 +1142,90 @@ function renderTransactions(){
 
     );
 
+
     tampil.forEach(item=>{
 
-        let icon="💰";
+        let icon = "💰";
 
-        switch(
 
-            item.Jenis
+        const jenis =
 
-            .toLowerCase()
+        (item.jenis || "")
+        .toLowerCase()
+        .trim();
+
+
+        const kategori =
+
+        (item.kategori || "")
+        .toLowerCase()
+        .trim();
+
+
+        /* =====================
+           ICON
+        ===================== */
+
+        if(
+
+            jenis === "masuk" &&
+
+            kategori === "nabung"
 
         ){
 
-            case "masuk":
-
-                icon="🟢";
-
-                break;
-
-            case "pinjam":
-
-                icon="🟠";
-
-                break;
-
-            case "bayar":
-
-                icon="🔵";
-
-                break;
-
-            case "keluar":
-
-                icon="🔴";
-
-                break;
-
-            case "bunga":
-
-                icon="🟣";
-
-                break;
+            icon = "🟢";
 
         }
 
-        transactionList.innerHTML+=
+        else if(
+
+            jenis === "keluar" &&
+
+            kategori === "hutang"
+
+        ){
+
+            icon = "🟠";
+
+        }
+
+        else if(
+
+            jenis === "masuk" &&
+
+            kategori === "bayar"
+
+        ){
+
+            icon = "🔵";
+
+        }
+
+        else if(
+
+            jenis === "keluar"
+
+        ){
+
+            icon = "🔴";
+
+        }
+
+        else if(
+
+            jenis === "masuk" &&
+
+            kategori === "bunga"
+
+        ){
+
+            icon = "🟣";
+
+        }
+
+
+        transactionList.innerHTML +=
 
         `
 
@@ -977,13 +1237,13 @@ function renderTransactions(){
 
                     ${icon}
 
-                    ${item.Nama}
+                    ${item.nama || kategori}
 
                 </div>
 
                 <div class="transaction-date">
 
-                    ${formatDate(item.Tanggal)}
+                    ${formatDate(item.tanggal)}
 
                 </div>
 
@@ -991,7 +1251,7 @@ function renderTransactions(){
 
             <div class="transaction-amount">
 
-                ${rupiah(item.Bayar)}
+                ${rupiah(item.nominal)}
 
             </div>
 
@@ -1001,7 +1261,8 @@ function renderTransactions(){
 
     });
 
-    toggleTransaction.textContent=
+
+    toggleTransaction.textContent =
 
     showAllTransaction
 
@@ -1028,7 +1289,7 @@ toggleTransaction
 
     ()=>{
 
-        showAllTransaction=
+        showAllTransaction =
 
         !showAllTransaction;
 
@@ -1038,6 +1299,7 @@ toggleTransaction
 
 );
 
+
 toggleLoan
 
 .addEventListener(
@@ -1046,7 +1308,7 @@ toggleLoan
 
     ()=>{
 
-        showAllLoan=
+        showAllLoan =
 
         !showAllLoan;
 
@@ -1062,6 +1324,3 @@ toggleLoan
 ===================================================== */
 
 fetchData();
-
-
-
