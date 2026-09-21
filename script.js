@@ -9,7 +9,7 @@
 ===================================================== */
 
 const API_URL =
-"https://opensheet.elk.";
+"https://opensheet.elk.sh/1Osl7-ble42Rg84Il04uXoNDrn6mzO0CstKC3_Cs6Vxg/kas";
 
 const TARGET_LIBURAN = 3000000;
 
