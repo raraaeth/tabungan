@@ -160,7 +160,7 @@ function createMember(name){
 
         masuk:0,
 
-        pinjam:0,
+        hutang:0,
 
         bayar:0,
 
@@ -183,7 +183,7 @@ function memberSaldo(member){
 
         member.bayar -
 
-        member.pinjam
+        member.hutang
 
     );
 
@@ -259,7 +259,7 @@ function processData(){
 
         masuk:0,
 
-        pinjam:0,
+        hutang:0,
 
         bayar:0,
 
@@ -358,9 +358,9 @@ function processData(){
 
                 break;
 
-            case "pinjam":
+            case "hutang":
 
-                summary.pinjam+=nominal;
+                summary.hutang+=nominal;
 
                 summary.saldo-=nominal;
 
@@ -368,7 +368,7 @@ function processData(){
 
                     members[nama]
 
-                    .pinjam+=nominal;
+                    .hutang+=nominal;
 
                 }
 
@@ -729,7 +729,7 @@ function renderLoans(){
 
         .toLowerCase()
 
-        ==="pinjam"
+        ==="hutang"
 
     )
 
